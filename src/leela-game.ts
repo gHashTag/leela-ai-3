@@ -6,7 +6,6 @@ import {
   RollDiceError as RollDiceErrorEvent
 } from '../generated/LeelaGame/LeelaGame'
 import { CommentAction, DiceRolled, PlayerAction, ReportAction, RollDiceError } from '../generated/schema'
-import { ByteArray, BigInt, Bytes } from '@graphprotocol/graph-ts'
 
 export function handleCommentAction(event: CommentActionEvent): void {
   let entity = new CommentAction(event.transaction.hash.concatI32(event.logIndex.toI32()))
@@ -38,8 +37,14 @@ export function handleDiceRolled(event: DiceRolledEvent): void {
 }
 
 export function handlePlayerAction(event: PlayerActionEvent): void {
-  let entity = new PlayerAction(event.transaction.hash.concatI32(event.logIndex.toI32()))
-  entity.player = event.params.player
+  let playerEntityId = event.transaction.hash.concatI32(event.logIndex.toI32())
+  let entity = new PlayerAction(playerEntityId)
+
+  if (!entity) {
+    entity = new PlayerAction(playerEntityId)
+    entity.player = event.params.player
+  }
+
   entity.fullName = event.params.fullName
   entity.avatar = event.params.avatar
   entity.intention = event.params.intention
