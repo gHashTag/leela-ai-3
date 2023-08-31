@@ -1,0 +1,66 @@
+# Comments for the CommentAction entity
+type CommentAction @entity(immutable: true) {
+  id: Bytes!
+  commentId: BigInt! # Identifier of the comment
+  reportId: BigInt! # Identifier of the report
+  actor: Bytes! # Address of the acting entity
+  content: String! # Comment content
+  timestamp: BigInt! # Timestamp
+  action: Int! # Action type
+  blockNumber: BigInt! # Block number
+  blockTimestamp: BigInt! # Block timestamp
+  transactionHash: Bytes! # Transaction hash
+  reportAction: ReportAction! # Linked report action
+}
+
+# Comments for the DiceRolled entity
+type DiceRolled @entity(immutable: true) {
+  id: Bytes!
+  roller: Bytes! # Address of the dice roller
+  rolled: Int! # Rolled number
+  currentPlan: BigInt! # Current plan
+  blockNumber: BigInt! # Block number
+  blockTimestamp: BigInt! # Block timestamp
+  transactionHash: Bytes! # Transaction hash
+  playerAction: PlayerAction! @derivedFrom(field: "diceRolls") # Linked player action
+}
+
+# Comments for the PlayerAction entity
+type PlayerAction @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes! # Player's address
+  fullName: String! # Player's full name
+  avatar: String! # Player's avatar
+  intention: String! # Player's intention
+  action: Int! # Action type
+  blockNumber: BigInt! # Block number
+  blockTimestamp: BigInt! # Block timestamp
+  transactionHash: Bytes! # Transaction hash
+  reportActions: [ReportAction!]! @derivedFrom(field: "playerAction") # Linked report actions
+  diceRolls: [DiceRolled!]! @derivedFrom(field: "playerAction") # Linked dice rolls
+}
+
+# Comments for the ReportAction entity
+type ReportAction @entity(immutable: true) {
+  id: Bytes!
+  reportId: BigInt! # Report identifier
+  actor: Bytes! # Address of the acting entity
+  content: String! # Action content
+  plan: BigInt! # Action plan
+  timestamp: BigInt! # Timestamp
+  action: Int! # Action type
+  blockNumber: BigInt! # Block number
+  blockTimestamp: BigInt! # Block timestamp
+  transactionHash: Bytes! # Transaction hash
+  playerAction: PlayerAction! # Linked player action
+  commentActions: [CommentAction!]! @derivedFrom(field: "reportAction") # Linked comment actions
+}
+
+# Comments for the RollDiceError entity
+type RollDiceError @entity(immutable: true) {
+  id: Bytes!
+  message: String! # Error message
+  blockNumber: BigInt! # Block number
+  blockTimestamp: BigInt! # Block timestamp
+  transactionHash: Bytes! # Transaction hash
+}
